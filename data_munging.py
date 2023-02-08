@@ -43,5 +43,6 @@ def prelim_analysis(df_list: list) -> None:
     common_heros = reduce(lambda df1,df2: pd.merge(df1,df2,on='name'), heros)
     print(len(common_heros))
 
+    
 unmerged_dfs = read_data(os.listdir("data/"))
 prelim_analysis(unmerged_dfs)
