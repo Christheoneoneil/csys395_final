@@ -1,7 +1,8 @@
 import pandas as pd
 import os
-import itertools
+import missingno as msno
 from functools import reduce
+import matplotlib.pyplot as plt
 
 def read_data(file_list: list) -> list:
     """
@@ -18,6 +19,7 @@ def read_data(file_list: list) -> list:
                 for file in file_list]
 
     return df_list 
+
 
 def prelim_analysis(df_list: list, possible_hero_col: list) -> None:
     """
@@ -46,7 +48,10 @@ def prelim_analysis(df_list: list, possible_hero_col: list) -> None:
     
     common_heros = reduce(lambda df1,df2: pd.merge(df1,df2,on=possible_hero_col[0]), heros)
     print("Number of Common Heros:", len(common_heros[renamed_heros_col]))
-    
-    
+    print(common_heros.info())
+
+    msno.matrix(msno.nullity_sort(common_heros))
+    plt.show()
+
 unmerged_dfs = read_data(os.listdir("data/"))
 prelim_analysis(unmerged_dfs, ["hero", "name"])
