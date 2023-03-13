@@ -3,6 +3,8 @@ import os
 import missingno as msno
 from functools import reduce
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def read_data(file_list: list) -> list:
     """
@@ -16,12 +18,12 @@ def read_data(file_list: list) -> list:
     
     """
     df_list = [pd.read_csv("data/" + file) 
-                for file in file_list]
+                for file in file_list if file != "merged_dat"]
 
     return df_list 
 
 
-def prelim_analysis(df_list: list, possible_hero_col: list) -> None:
+def prelim_analysis(df_list: list, possible_hero_col: list, fig_title: str) -> None:
     """
     prelim analysis looks to do a quick analysis
     of the commonality and completeness acorss the
@@ -31,9 +33,10 @@ def prelim_analysis(df_list: list, possible_hero_col: list) -> None:
     df_list: list data frames read in 
     possible_hero_cols: list of column names
     that are hero columns across data sets
+    fig_title: title for matrix title
 
     Returns: 
-    None
+    merged data
     """
 
     df_list = df_list.copy()
@@ -51,7 +54,52 @@ def prelim_analysis(df_list: list, possible_hero_col: list) -> None:
     print(common_heros.info())
 
     msno.matrix(msno.nullity_sort(common_heros))
-    plt.show()
+    plt.savefig(fig_title)
 
-unmerged_dfs = read_data(os.listdir("data/"))
-prelim_analysis(unmerged_dfs, ["hero", "name"])
+    return common_heros
+
+
+def clean_data(merged_data_set: pd.DataFrame, cols_to_drop: list, prelim: pd.DataFrame):
+    """
+    clean data takes in raw uncleaned data,
+    and drops and imputes columns
+
+    Params:
+    merged_data_set: data frame of raw uncleaned data
+    cols_to_drop: columns that are redundent and or
+    to sparse for usage and will be dropped
+    prelim: analysis function to give basic missingness stats
+
+    Returns: 
+    raw and clean data 
+    """
+
+    merged_data_set = merged_data_set.copy()
+    merged_data_set.drop(cols_to_drop, axis="columns", inplace=True)
+    merged_data_set.columns = map(str.lower, merged_data_set.columns)
+    merged_data_set.columns = merged_data_set.columns.str.rstrip('_x')
+    merged_data_set.drop_duplicates(inplace=True)
+    
+    num_cols = list(merged_data_set.select_dtypes(include="float64").columns)
+    merged_data_set[num_cols] = merged_data_set[num_cols].apply(np.abs)
+    print(merged_data_set[num_cols].describe())
+    
+    cat_cols = list(merged_data_set.select_dtypes(include="object").columns)
+    print(merged_data_set[cat_cols].describe())
+
+    prelim([merged_data_set], ["hero"], "missing_mat_non_red")
+    
+    merged_data_set.to_csv("data/merged_dat")
+    
+
+unmerged_dfs = read_data(file_list=os.listdir("data/"))
+merged_data = prelim_analysis(df_list=unmerged_dfs, 
+                              possible_hero_col=["hero", "name"], 
+                              fig_title="raw_missing_mat")
+drop_cols = ["Identity", "Status", "Race_y", "Gender_y", 
+             "Alignment_y", "Height_y", "Weight_y", 
+             "EyeColor", "SkinColor", "Publisher_y",
+             "Year", "Appearances", "FirstAppearance", 
+             "AdditionalData", "Total", "Alignment"]
+clean_data(merged_data_set=merged_data, cols_to_drop=drop_cols, 
+           prelim=prelim_analysis) 
