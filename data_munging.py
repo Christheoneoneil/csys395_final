@@ -90,7 +90,7 @@ def clean_data(merged_data_set: pd.DataFrame, cols_to_drop: list, prelim: pd.Dat
 
     prelim([merged_data_set], ["hero"], "missing_mat_non_red")
     
-    merged_data_set.to_csv("data/merged_dat")
+    merged_data_set.to_csv("data/merged_dat.csv")
     
 
 unmerged_dfs = read_data(file_list=os.listdir("data/"))
