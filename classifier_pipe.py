@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid: dict):
     """
@@ -29,6 +29,8 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     data.dropna(subset=(target_var), inplace=True)
     X = data.drop(target_var, axis="columns")
     y = data[target_var]
+    y.hist()
+    plt.savefig("class_distributions")
     
     from imblearn.over_sampling import RandomOverSampler
     ros = RandomOverSampler(random_state=0)
