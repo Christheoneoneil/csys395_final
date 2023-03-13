@@ -1,19 +1,23 @@
 import pandas as pd
+import numpy as np
 
-def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier):
+
+def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid: dict):
     """
     creates a random foreset pipeline for classification
 
     Params: 
     data: pandas data frame used for classification
     target_var: variables name for target var
+    classifier: provided classifier for pipeline
+    cv_grid: parameter grid for cross validation
 
     Returns: 
     None
     
     """
     
-    from sklearn.model_selection import train_test_split
+    from sklearn.model_selection import train_test_split, RandomizedSearchCV
     from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
     from sklearn.pipeline import Pipeline
     from sklearn.experimental import enable_iterative_imputer
@@ -44,14 +48,24 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier):
                               ('cat_transform', cat_pipe, cat_cols)])
     
     class_pipe = Pipeline([("col_transform", col_t),
-                        ("random_forst_class", classifier)])
+                        ("rfc", classifier)])
     
-    class_pipe.fit(X_train, y_train)
-    preds = class_pipe.predict(X_test)
-
+    grid_clf = RandomizedSearchCV(estimator=class_pipe, 
+                                  param_distributions=cv_grid,
+                                  scoring="accuracy", cv=10, 
+                                  verbose=False)
+    grid_clf.fit(X_train, y_train)
+    best_mod = grid_clf.best_estimator_
+    best_mod.fit(X_train, y_train)
+    preds = best_mod.predict(X_test)
     print(classification_report(preds, y_test))
+
 
 unengineered_dat = pd.read_csv("data/merged_dat.csv")
 from sklearn.ensemble import RandomForestClassifier
 rf_classifier = RandomForestClassifier()
-classifier_pipeline(unengineered_dat, "alignment", classifier=rf_classifier)
+param_grid = {
+                 'rfc__n_estimators': np.arange(10, 110, 10),
+                 'rfc__max_depth': np.arange(1, 10, 1)
+             }
+classifier_pipeline(unengineered_dat, "alignment", classifier=rf_classifier, cv_grid=param_grid)
