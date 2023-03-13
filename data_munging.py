@@ -18,8 +18,8 @@ def read_data(file_list: list) -> list:
     list of data frames for merging 
     
     """
-    df_list = [pd.read_csv("data/" + file) 
-                for file in file_list if file != "merged_dat"]
+    df_list = [pd.read_csv("data/" + file).replace("-", np.nan) 
+                for file in file_list if file != "merged_dat.csv"]
 
     return df_list 
 
