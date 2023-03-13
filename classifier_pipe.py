@@ -29,9 +29,12 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     data.dropna(subset=(target_var), inplace=True)
     X = data.drop(target_var, axis="columns")
     y = data[target_var]
+    
+    from imblearn.over_sampling import RandomOverSampler
+    ros = RandomOverSampler(random_state=0)
+    X_resampled, y_resampled = ros.fit_resample(X, y)
 
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y,
+    X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled,
                                                          train_size=.8, 
                                                          random_state=117)
     
