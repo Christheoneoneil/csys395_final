@@ -43,11 +43,11 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier):
     col_t = ColumnTransformer([("num_transfrom", num_pipe, num_cols), 
                               ('cat_transform', cat_pipe, cat_cols)])
     
-    rf_pipe = Pipeline([("col_transform", col_t),
+    class_pipe = Pipeline([("col_transform", col_t),
                         ("random_forst_class", classifier)])
     
-    rf_pipe.fit(X_train, y_train)
-    preds = rf_pipe.predict(X_test)
+    class_pipe.fit(X_train, y_train)
+    preds = class_pipe.predict(X_test)
 
     print(classification_report(preds, y_test))
 
