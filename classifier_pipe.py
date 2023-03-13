@@ -23,7 +23,6 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     from sklearn.experimental import enable_iterative_imputer
     from sklearn.impute import IterativeImputer, SimpleImputer
     from sklearn.compose import ColumnTransformer
-    from sklearn.metrics import classification_report
     
     data = data.copy()
     data.dropna(subset=(target_var), inplace=True)
@@ -35,7 +34,8 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     from imblearn.over_sampling import RandomOverSampler
     ros = RandomOverSampler(random_state=0)
     X_resampled, y_resampled = ros.fit_resample(X, y)
-
+    y_resampled.hist()
+    plt.savefig("resampled_distrubitons")
     X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled,
                                                          train_size=.8, 
                                                          random_state=117)
@@ -62,15 +62,9 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     grid_clf.fit(X_train, y_train)
     best_mod = grid_clf.best_estimator_
     best_mod.fit(X_train, y_train)
-    preds = best_mod.predict(X_test)
-    print(classification_report(preds, y_test))
+
+    return best_mod, X_test, y_test
+    
 
 
-unengineered_dat = pd.read_csv("data/merged_dat.csv")
-from sklearn.ensemble import RandomForestClassifier
-rf_classifier = RandomForestClassifier()
-param_grid = {
-                 'rfc__n_estimators': np.arange(10, 110, 10),
-                 'rfc__max_depth': np.arange(1, 10, 1)
-             }
-classifier_pipeline(unengineered_dat, "alignment", classifier=rf_classifier, cv_grid=param_grid)
+
