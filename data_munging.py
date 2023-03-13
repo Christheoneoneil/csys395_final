@@ -13,6 +13,7 @@ def read_data(file_list: list) -> list:
     Params:
     file_list: list of files contained wthin 
     a directory 
+    
     Returns:
     list of data frames for merging 
     
@@ -26,14 +27,14 @@ def read_data(file_list: list) -> list:
 def prelim_analysis(df_list: list, possible_hero_col: list, fig_title: str) -> None:
     """
     prelim analysis looks to do a quick analysis
-    of the commonality and completeness acorss the
+    of the commonality and completeness across the
     data sets
 
     Params:
     df_list: list data frames read in 
     possible_hero_cols: list of column names
     that are hero columns across data sets
-    fig_title: title for matrix title
+    fig_title: title for matrix plot
 
     Returns: 
     merged data
@@ -62,7 +63,7 @@ def prelim_analysis(df_list: list, possible_hero_col: list, fig_title: str) -> N
 def clean_data(merged_data_set: pd.DataFrame, cols_to_drop: list, prelim: pd.DataFrame):
     """
     clean data takes in raw uncleaned data,
-    and drops and imputes columns
+    and drops and cleans for feature engineering
 
     Params:
     merged_data_set: data frame of raw uncleaned data
@@ -71,7 +72,7 @@ def clean_data(merged_data_set: pd.DataFrame, cols_to_drop: list, prelim: pd.Dat
     prelim: analysis function to give basic missingness stats
 
     Returns: 
-    raw and clean data 
+    None 
     """
 
     merged_data_set = merged_data_set.copy()
