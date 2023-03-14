@@ -13,8 +13,9 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     cv_grid: parameter grid for cross validation
 
     Returns: 
-    None
-    
+    best_mod: best model chosen from cross validation
+    X_test: feature data used for testing
+    y_test: target data used for testing
     """
     
     from sklearn.model_selection import train_test_split, RandomizedSearchCV
