@@ -53,7 +53,7 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
                               ('cat_transform', cat_pipe, cat_cols)])
     
     class_pipe = Pipeline([("col_transform", col_t),
-                        ("rfc", classifier)])
+                        ("class", classifier)])
     
     grid_clf = RandomizedSearchCV(estimator=class_pipe, 
                                   param_distributions=cv_grid,
