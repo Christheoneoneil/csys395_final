@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-def metrics(mod, X_t pd.DataFrame, y_t: pd.DataFrame):
+def metrics(mod, X_t: pd.DataFrame, y_t: pd.DataFrame)->None:
     """
     produces metrics for given model
 
@@ -19,7 +19,6 @@ def metrics(mod, X_t pd.DataFrame, y_t: pd.DataFrame):
     from sklearn.metrics import classification_report
     preds = mod.predict(X_t)
     probs = mod.predict_proba(X_t)
-    print(probs)
     print(classification_report(preds, y_t)) 
 
 
