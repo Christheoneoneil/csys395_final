@@ -101,6 +101,7 @@ drop_cols = ["Identity", "Status", "Race_y", "Gender_y",
              "Alignment_y", "Height_y", "Weight_y", 
              "EyeColor", "SkinColor", "Publisher_y",
              "Year", "Appearances", "FirstAppearance", 
-             "AdditionalData", "Total", "Alignment"]
+             "AdditionalData", "Total", "Alignment", "Hair color",
+             "Skin color"]
 clean_data(merged_data_set=merged_data, cols_to_drop=drop_cols, 
            prelim=prelim_analysis) 
