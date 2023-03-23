@@ -28,13 +28,12 @@ def metrics(mod, X_t: pd.DataFrame, y_t: pd.DataFrame)->None:
     # Plot confusion matrix
     fig, ax = plt.subplots(figsize=(8, 5))
     cmp = ConfusionMatrixDisplay(
-        confusion_matrix(y_test, preds),
-        display_labels=["class_1", "class_2", "class_3"],
+        confusion_matrix(y_t, preds),
+        display_labels=["good", "neutral", "bad"]
     )
-
+    
     cmp.plot(ax=ax)
     plt.show()
-    
 
 
 unengineered_dat = pd.read_csv("data/merged_dat.csv")
