@@ -20,11 +20,17 @@ def metrics(mod, X_t: pd.DataFrame, y_t: pd.DataFrame)->None:
     from sklearn.metrics import classification_report
     from sklearn.metrics import brier_score_loss
     from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+    from sklearn.metrics import jaccard_score
+    from sklearn.metrics import roc_auc_score
 
     preds = mod.predict(X_t)
     probs = mod.predict_proba(X_t)
     print(classification_report(preds, y_t)) 
-
+    jacc = jaccard_score(y_t, preds, average = 'macro')
+    print('The jaccard score is ' + str(jacc))
+    
+    roc = roc_auc_score(y_t, probs, multi_class = 'ovr')
+    print('The ROC AUC is ' + str(roc))
     # Plot confusion matrix
     fig, ax = plt.subplots(figsize=(8, 5))
     cmp = ConfusionMatrixDisplay(
