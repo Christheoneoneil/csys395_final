@@ -43,6 +43,7 @@ def metrics(mod, X_t: pd.DataFrame, y_t: pd.DataFrame)->None:
 
 unengineered_dat = pd.read_csv("data/merged_dat.csv")
 from sklearn.ensemble import RandomForestClassifier
+from imblearn.over_sampling import SMOTE
 rf_classifier = RandomForestClassifier()
 param_grid = {
                  'class__n_estimators': np.arange(30, 110, 5),
@@ -50,7 +51,7 @@ param_grid = {
                  'class__max_features': ['sqrt', 'log2', 'None'],
                  'class__criterion' : ['gini', 'entropy'],
              }
-rf_model, X_test, y_test = classifier_pipeline(unengineered_dat, "alignment", classifier=rf_classifier, cv_grid=param_grid)
+rf_model, X_test, y_test = classifier_pipeline(unengineered_dat, "alignment", classifier=rf_classifier, cv_grid=param_grid, oversampler=SMOTE())
 print(rf_model)
 metrics(mod=rf_model, X_t=X_test, y_t=y_test) 
 

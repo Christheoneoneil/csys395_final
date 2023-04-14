@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from imblearn.over_sampling import RandomOverSampler
 
-def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid: dict):
+def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid: dict, oversampler=RandomOverSampler()):
     """
     creates a random foreset pipeline for classification
 
@@ -20,7 +21,7 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     
     from sklearn.model_selection import train_test_split, RandomizedSearchCV
     from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
-    from sklearn.pipeline import Pipeline
+    from imblearn.pipeline import Pipeline
     from sklearn.experimental import enable_iterative_imputer
     from sklearn.impute import IterativeImputer, SimpleImputer
     from sklearn.compose import ColumnTransformer
@@ -29,15 +30,8 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     data.dropna(subset=(target_var), inplace=True)
     X = data.drop(target_var, axis="columns")
     y = data[target_var]
-    y.hist()
-    plt.savefig("class_distributions")
-    
-    from imblearn.over_sampling import RandomOverSampler
-    ros = RandomOverSampler(random_state=0)
-    X_resampled, y_resampled = ros.fit_resample(X, y)
-    y_resampled.hist()
-    plt.savefig("resampled_distrubitons")
-    X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled,
+  
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                          train_size=.8, 
                                                          random_state=117)
     
@@ -45,16 +39,18 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     cat_cols = list(data.select_dtypes(include="object").columns)
     cat_cols.remove(target_var)
     
-    num_pipe = Pipeline([("it_impu", IterativeImputer()), 
+    num_pipe = Pipeline(steps=[("it_impu", IterativeImputer()), 
                                     ("min_max", MinMaxScaler())])
-    cat_pipe = Pipeline([("cat_impu", SimpleImputer(strategy="most_frequent")),
+    cat_pipe = Pipeline(steps=[("cat_impu", SimpleImputer(strategy="most_frequent")),
                          ('encoder', OneHotEncoder(handle_unknown="ignore"))])
     
     col_t = ColumnTransformer([("num_transfrom", num_pipe, num_cols), 
                               ('cat_transform', cat_pipe, cat_cols)])
     
-    class_pipe = Pipeline([("col_transform", col_t),
-                        ("class", classifier)])
+    
+    class_pipe = Pipeline(steps=[("col_trans", col_t),
+                                ("samp", oversampler),
+                                ("class", classifier)])
     
     grid_clf = RandomizedSearchCV(estimator=class_pipe, 
                                   param_distributions=cv_grid,
