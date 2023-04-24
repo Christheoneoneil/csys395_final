@@ -17,6 +17,7 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     best_mod: best model chosen from cross validation
     X_test: feature data used for testing
     y_test: target data used for testing
+    y_train: feature data for testing
     """
     
     from sklearn.model_selection import train_test_split, RandomizedSearchCV
@@ -59,9 +60,6 @@ def classifier_pipeline(data: pd.DataFrame, target_var: str, classifier, cv_grid
     grid_clf.fit(X_train, y_train)
     best_mod = grid_clf.best_estimator_
     best_mod.fit(X_train, y_train)
-
-    return best_mod, X_test, y_test
-    
-
+    return best_mod, X_test, y_test, y_train
 
 
