@@ -44,6 +44,8 @@ def metrics(mod, X_t: pd.DataFrame, y_t: pd.DataFrame, y_train: pd.DataFrame, mo
     )
     
     cmp.plot(ax=ax)
+    plt.title(mod_str+" Confusion Matrix")
+
     plt.savefig('Results/' + "confmat_" + mod_str + '.png')
     plt.show()
 
@@ -61,7 +63,7 @@ def metrics(mod, X_t: pd.DataFrame, y_t: pd.DataFrame, y_train: pd.DataFrame, mo
     plt.axis("square")
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
-    plt.title("One-vs-Rest ROC curves:\nGood vs (Neutral & Bad)")
+    plt.title(mod_str+"\nOne-vs-Rest ROC curves:\nGood vs (Neutral & Bad)")
     plt.legend()
     plt.savefig('Results/' + "ROC_AUC__" + mod_str + '.png')
 
